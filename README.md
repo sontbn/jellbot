@@ -1,2 +1,2 @@
 # jellbot
-ChatGPT - Telegram bot for personal use
+RajaOngkirBot - Telegram bot for personal use
