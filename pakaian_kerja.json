@@ -1,0 +1,84 @@
+{
+    "senin": {
+        "pria": {
+            "kemeja": "putih Kemenkeu",
+            "bawahan": "celana panjang hitam keabu-abuan (charcoal)"
+        },
+        "wanita": {
+            "kemeja": "putih Kemenkeu",
+            "bawahan": "celana/rok hitam keabu-abuan (charcoal)"
+        }
+    },
+    "selasa": {
+        "pria": {
+            "kemeja": "batik lengan panjang",
+            "bawahan": "celana panjang"
+        },
+        "wanita": {
+            "kemeja": "batik lengan panjang",
+            "bawahan": "celana/rok atau terusan lengan panjang motif batik"
+        }
+    },
+    "rabu": {
+        "pria": {
+            "kemeja": "biru tua Kemenkeu",
+            "bawahan": "celana panjang warna coklat keabuan (beige)"
+        },
+        "wanita": {
+            "kemeja": "biru tua Kemenkeu",
+            "bawahan": "celana/rok warna coklat keabuan (beige)"
+        }
+    },
+    "kamis": {
+        "1": {
+            "pria": {
+                "kemeja": "Putih Handal",
+                "bawahan": "celana panjang warna krem coklat (khaki)"
+            },
+            "wanita": {
+                "kemeja": "Putih Handal",
+                "bawahan": "celana/rok warna krem coklat (khaki)"
+            }
+        },
+        "2": {
+            "pria": {
+                "kemeja": "Smart Casual",
+                "bawahan": "celana/Blue Jeans"
+            },
+            "wanita": {
+                "kemeja": "Smart Casual",
+                "bawahan": "celana/rok Blue Jeans"
+            }
+        },
+        "3": {
+            "pria": {
+                "kemeja": "Biru Handal",
+                "bawahan": "celana panjang warna krem coklat (khaki)"
+            },
+            "wanita": {
+                "kemeja": "Biru Handal",
+                "bawahan": "celana/rok warna krem coklat (khaki)"
+            }
+        },
+        "4": {
+            "pria": {
+                "kemeja": "Smart Casual",
+                "bawahan": "celana panjang"
+            },
+            "wanita": {
+                "kemeja": "Smart Casual",
+                "bawahan": "celana/rok"
+            }
+        }
+    },
+    "jumat": {
+        "pria": {
+            "kemeja": "batik lengan pendek",
+            "bawahan": "celana panjang"
+        },
+        "wanita": {
+            "kemeja": "batik lengan panjang/pendek",
+            "bawahan": "celana/rok atau terusan motif batik"
+        }
+    }
+}

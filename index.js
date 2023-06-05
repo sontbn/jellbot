@@ -1,25 +1,125 @@
 const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs');
 const axios = require('axios');
 require('dotenv').config();
 
 const token = process.env.TOKEN_TELEGRAM;
-const apikey= process.env.API_KEY_RAJAONGKIR;
-
+const apikey = process.env.API_KEY_RAJAONGKIR;
 
 const bot = new TelegramBot(token, { polling: true });
 
-let chatData = {}; // Menyimpan data percakapan
+let chatData = {};
 
 // Menangani perintah /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Selamat datang di OngkirBot. Silakan klik /cekongkir untuk memulai menggunakan bot ini.');
+  bot.sendMessage(chatId, 'Selamat datang di SonathaBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini.');
 });
 
-// Menangani perintah /cekongkir
+
+
+// seragambesok -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/seragambesok/, (msg) => {
+  const chatId = msg.chat.id;
+  chatData[chatId] = { status: 'seragambesok' };
+
+  bot.sendMessage(chatId, "Balas '1', jika anda Pria. Balas '2', jika Anda Wanita.");
+});
+
+bot.onText(/^\d+$/, (msg) => {
+  const chatId = msg.chat.id;
+  const data = chatData[chatId];
+
+  if (data && data.status === 'seragambesok') {
+    const gender = parseInt(msg.text);
+
+    if (![1, 2].includes(gender)) {
+      bot.sendMessage(chatId, 'Mohon berikan input yang valid (1 untuk Pria, 2 untuk Wanita).');
+      return;
+    }
+
+    // Membaca file JSON dengan data pakaian kerja
+    fs.readFile('pakaian_kerja.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file pakaian_kerja:', err);
+        return;
+      }
+
+      // Parsing data JSON
+      const pakaianKerja = JSON.parse(data);
+
+      const hariBerikutnya = getHariBerikutnya();
+      const tanggalBerikutnya = getTanggalBerikutnya();
+      const infoPakaianKerja = getPakaianKerja(hariBerikutnya, gender, pakaianKerja);
+
+      // Reset status pengguna setelah selesai
+      delete chatData[chatId];
+
+      if (typeof infoPakaianKerja === 'string') {
+        bot.sendMessage(chatId, infoPakaianKerja);
+      }
+      else {
+        const { kemeja, bawahan } = infoPakaianKerja;
+        if (hariBerikutnya.toLowerCase() === 'kamis') {
+          const minggu = getMingguBulanSekarang();
+          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam besok lagi :)`);
+        }
+        else {
+          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam besok lagi :)`);
+        }
+      }
+    });
+  }
+});
+
+function getHariBerikutnya() {
+  const hariIni = new Date().getDay();
+  const daftarHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const indeksHariBerikutnya = (hariIni + 1) % 7;
+  return daftarHari[indeksHariBerikutnya];
+}
+
+function getTanggalBerikutnya() {
+  const tanggalHariIni = new Date().getDate();
+  const tanggalBerikutnya = tanggalHariIni + 1;
+  const bulanSekarang = new Date().getMonth() + 1;
+  const tahunSekarang = new Date().getFullYear();
+  return `${tanggalBerikutnya}-${bulanSekarang}-${tahunSekarang}`;
+}
+
+// Fungsi untuk mendapatkan informasi pakaian kerja berdasarkan hari dan jenis kelamin
+function getPakaianKerja(hari, gender, pakaianKerja) {
+  const pakaianHariIni = pakaianKerja[hari.toLowerCase()];
+  if (!pakaianHariIni) {
+    return 'Informasi pakaian kerja tidak tersedia untuk hari ini.';
+  }
+
+  let pakaian;
+  if (hari.toLowerCase() === 'kamis') {
+    const minggu = getMingguBulanSekarang();
+    pakaian = pakaianHariIni[minggu][gender === 1 ? 'pria' : 'wanita'];
+  } else {
+    pakaian = pakaianHariIni[gender === 1 ? 'pria' : 'wanita'];
+  }
+  return pakaian;
+}
+
+function getMingguBulanSekarang() {
+  const tanggalHariIni = new Date().getDate();
+  const minggu = Math.ceil(tanggalHariIni / 7);
+  return minggu.toString();
+}
+
+
+
+
+
+
+
+// cekongkir -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bot.onText(/\/cekongkir/, async (msg) => {
   const chatId = msg.chat.id;
-  chatData[chatId] = {};
+  chatData[chatId] = { status: 'cekongkir' };
 
   // Mengirim pertanyaan pertama
   bot.sendMessage(chatId, 'PILIH PROVINSI ASAL PENGIRIMAN:', {
@@ -29,102 +129,108 @@ bot.onText(/\/cekongkir/, async (msg) => {
   });
 });
 
-
 bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const data = chatData[chatId];
 
-  if (!data.originProvinceId) {
-    data.originProvinceId = query.data;
+  if (data && data.status === 'cekongkir') {
 
-    // Mengirim pertanyaan kedua
-    bot.sendMessage(chatId, 'PILIH KOTA/KAB ASAL PENGIRIMAN:', {
-      reply_markup: {
-        inline_keyboard: await getCitiesKeyboard(data.originProvinceId),
-      },
-    });
-  } else if (!data.originCityId) {
-    data.originCityId = query.data;
+    if (!data.originProvinceId) {
+      data.originProvinceId = query.data;
 
-    // Mengirim pertanyaan ketiga
-    bot.sendMessage(chatId, 'PILIH PROVINSI TUJUAN PENGIRIMAN:', {
-      reply_markup: {
-        inline_keyboard: await getProvincesKeyboard(),
-      },
-    });
-  } else if (!data.destinationProvinceId) {
-    data.destinationProvinceId = query.data;
+      // Mengirim pertanyaan kedua
+      bot.sendMessage(chatId, 'PILIH KOTA/KAB ASAL PENGIRIMAN:', {
+        reply_markup: {
+          inline_keyboard: await getCitiesKeyboard(data.originProvinceId),
+        },
+      });
+    }
+    else if (!data.originCityId) {
+      data.originCityId = query.data;
 
-    // Mengirim pertanyaan keempat
-    bot.sendMessage(chatId, 'PILIH KOTA TUJUAN PENGIRIMAN:', {
-      reply_markup: {
-        inline_keyboard: await getCitiesKeyboard(data.destinationProvinceId),
-      },
-    });
-  } else if (!data.destinationCityId) {
-    data.destinationCityId = query.data;
+      // Mengirim pertanyaan ketiga
+      bot.sendMessage(chatId, 'PILIH PROVINSI TUJUAN PENGIRIMAN:', {
+        reply_markup: {
+          inline_keyboard: await getProvincesKeyboard(),
+        },
+      });
+    }
+    else if (!data.destinationProvinceId) {
+      data.destinationProvinceId = query.data;
 
-    // Mengirim pertanyaan kelima
-    bot.sendMessage(chatId, 'MASUKKAN BERAT KIRIMAN (dalam gram):');
-  } else if (!data.weight) {
-    data.weight = query.data;
+      // Mengirim pertanyaan keempat
+      bot.sendMessage(chatId, 'PILIH KOTA TUJUAN PENGIRIMAN:', {
+        reply_markup: {
+          inline_keyboard: await getCitiesKeyboard(data.destinationProvinceId),
+        },
+      });
+    }
+    else if (!data.destinationCityId) {
+      data.destinationCityId = query.data;
 
-    // Mengirim pertanyaan keenam
-    bot.sendMessage(chatId, 'PILIH KURIR:', {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: 'JNE', callback_data: 'jne' },
-            { text: 'POS', callback_data: 'pos' },
-            { text: 'TIKI', callback_data: 'tiki' },
+      // Mengirim pertanyaan kelima
+      bot.sendMessage(chatId, 'MASUKKAN BERAT KIRIMAN (dalam gram):');
+    }
+    else if (!data.weight) {
+      data.weight = query.data;
+
+      // Mengirim pertanyaan keenam
+      bot.sendMessage(chatId, 'PILIH KURIR:', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'JNE', callback_data: 'jne' },
+              { text: 'POS', callback_data: 'pos' },
+              { text: 'TIKI', callback_data: 'tiki' },
+            ],
           ],
-        ],
-      },
-    });
-  } else if (data.originCityId && data.destinationCityId && data.weight && !data.courier) {
-    data.courier = query.data;
-  
-    // Mengirim permintaan ke API RajaOngkir untuk mendapatkan ongkos kirim
-    const shippingCost = await getShippingCost(data.originCityId, data.destinationCityId, data.weight, data.courier);
-  
-    // Menampilkan hasil ongkos kirim
-    bot.sendMessage(chatId, shippingCost);
-  }  
-});
+        },
+      });
+    }
+    else if (data.originCityId && data.destinationCityId && data.weight && !data.courier) {
+      data.courier = query.data;
 
+      // Mengirim permintaan ke API RajaOngkir untuk mendapatkan ongkos kirim
+      const shippingCost = await getShippingCost(data.originCityId, data.destinationCityId, data.weight, data.courier);
+
+      delete chatData[chatId];
+
+      // Menampilkan hasil ongkos kirim
+      bot.sendMessage(chatId, shippingCost);
+    }
+  }
+});
 
 // Khusus menangani pesan tanpa user klik tombol
 bot.onText(/^[0-9]+$/, (msg) => {
   const chatId = msg.chat.id;
-  const weight = msg.text;
+  const data = chatData[chatId];
 
-  if (chatData[chatId] && chatData[chatId].originCityId && chatData[chatId].destinationCityId && !chatData[chatId].weight) {
-    chatData[chatId].weight = weight;
+  if (data && data.status === 'cekongkir') {
+    const weight = msg.text;
 
-    // Mengirim pertanyaan keenam
-    bot.sendMessage(chatId, 'PILIH KURIR:', {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: 'JNE', callback_data: 'jne' },
-            { text: 'POS', callback_data: 'pos' },
-            { text: 'TIKI', callback_data: 'tiki' },
+    if (chatData[chatId] && chatData[chatId].originCityId && chatData[chatId].destinationCityId && !chatData[chatId].weight) {
+      chatData[chatId].weight = weight;
+
+      // Mengirim pertanyaan keenam
+      bot.sendMessage(chatId, 'PILIH KURIR:', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'JNE', callback_data: 'jne' },
+              { text: 'POS', callback_data: 'pos' },
+              { text: 'TIKI', callback_data: 'tiki' },
+            ],
           ],
-        ],
-      },
-    });
-  } else {
-    // Menangani pesan yang tidak sesuai dengan yang diharapkan
-    bot.sendMessage(chatId, 'Mohon ikuti langkah-langkah yang ditentukan.');
+        },
+      });
+    }
+    else {
+      bot.sendMessage(chatId, 'Mohon ikuti langkah-langkah yang ditentukan.');
+    }
   }
 });
 
-
-
-
-
-
-// ---------------------------------------------------------------------------------------------------------------------------
 // Mendapatkan daftar provinsi sebagai inline keyboard
 async function getProvincesKeyboard() {
   try {
@@ -178,3 +284,14 @@ async function getShippingCost(originCityId, destinationCityId, weight, courier)
     return 'Failed to retrieve shipping cost.';
   }
 }
+
+
+
+
+
+// Menjalankan bot
+bot.on("polling_error", (err) => {
+  console.error('Polling error:', err);
+});
+
+console.log('Bot is running...');
