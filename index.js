@@ -18,6 +18,81 @@ bot.onText(/\/start/, (msg) => {
 
 
 
+
+// seragamhariini---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/seragamhariini/, (msg) => {
+  const chatId = msg.chat.id;
+  chatData[chatId] = { status: 'seragamhariini' };
+
+  bot.sendMessage(chatId, "Balas '1', jika anda Pria. Balas '2', jika Anda Wanita.");
+});
+
+bot.onText(/^\d+$/, (msg) => {
+  const chatId = msg.chat.id;
+  const data = chatData[chatId];
+
+  if (data && data.status === 'seragamhariini') {
+    const gender = parseInt(msg.text);
+
+    if (![1, 2].includes(gender)) {
+      bot.sendMessage(chatId, 'Mohon berikan input yang valid (1 untuk Pria, 2 untuk Wanita).');
+      return;
+    }
+
+    // Membaca file JSON dengan data pakaian kerja
+    fs.readFile('pakaian_kerja.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file pakaian_kerja:', err);
+        return;
+      }
+
+      // Parsing data JSON
+      const pakaianKerja = JSON.parse(data);
+
+      const hariIni = getHariIni();
+      const tanggalHariIni = getTanggalHariIni();
+      const infoPakaianKerja = getPakaianKerja(hariIni, gender, pakaianKerja);
+
+      // Reset status pengguna setelah selesai
+      delete chatData[chatId];
+
+      if (typeof infoPakaianKerja === 'string') {
+        bot.sendMessage(chatId, infoPakaianKerja);
+      }
+      else {
+        const { kemeja, bawahan } = infoPakaianKerja;
+        bot.sendMessage(
+          chatId,
+          `Hari ini adalah hari ${hariIni}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek lagi :)`)
+          .then(() => {
+            const gambarPath = `${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            bot.sendPhoto(chatId, gambarPath);
+          })
+          .catch((error) => {
+            console.error('Error sending photo:', error);
+          });
+      }
+    });
+  }
+});
+
+function getHariIni() {
+  const daftarHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const hariIni = new Date().getDay();
+  return daftarHari[hariIni];
+}
+
+function getTanggalHariIni() {
+  const tanggalHariIni = new Date().getDate();
+  const bulanSekarang = new Date().getMonth() + 1;
+  const tahunSekarang = new Date().getFullYear();
+  return `${tanggalHariIni}-${bulanSekarang}-${tahunSekarang}`;
+}
+
+
+
+
+
 // seragambesok -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bot.onText(/\/seragambesok/, (msg) => {
   const chatId = msg.chat.id;
@@ -62,10 +137,24 @@ bot.onText(/^\d+$/, (msg) => {
         const { kemeja, bawahan } = infoPakaianKerja;
         if (hariBerikutnya.toLowerCase() === 'kamis') {
           const minggu = getMingguBulanSekarang();
-          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam besok lagi :)`);
+          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragambesok kalau mau cek lagi :)`)
+          .then(() => {
+            const gambarPath = `${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            bot.sendPhoto(chatId, gambarPath);
+          })
+          .catch((error) => {
+            console.error('Error sending photo:', error);
+          });
         }
         else {
-          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam besok lagi :)`);
+          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragambesok kalau mau cek lagi :)`)
+          .then(() => {
+            const gambarPath = `${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            bot.sendPhoto(chatId, gambarPath);
+          })
+          .catch((error) => {
+            console.error('Error sending photo:', error);
+          });
         }
       }
     });
