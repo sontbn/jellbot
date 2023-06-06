@@ -24,7 +24,7 @@ bot.onText(/\/seragamhariini/, (msg) => {
   const chatId = msg.chat.id;
   chatData[chatId] = { status: 'seragamhariini' };
 
-  bot.sendMessage(chatId, "Balas '1', jika anda Pria. Balas '2', jika Anda Wanita.");
+  bot.sendMessage(chatId, "Balas '1', jika Anda Pria. Balas '2', jika Anda Wanita.");
 });
 
 bot.onText(/^\d+$/, (msg) => {
@@ -65,7 +65,7 @@ bot.onText(/^\d+$/, (msg) => {
           const minggu = getMingguBulanSekarang();
           bot.sendMessage(chatId, `Hari ini adalah hari ${hariIni}, minggu ${minggu}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam untuk besok :)`)
           .then(() => {
-            const gambarPath = `img/${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
           })
           .catch((error) => {
@@ -109,7 +109,7 @@ bot.onText(/\/seragambesok/, (msg) => {
   const chatId = msg.chat.id;
   chatData[chatId] = { status: 'seragambesok' };
 
-  bot.sendMessage(chatId, "Balas '1', jika anda Pria. Balas '2', jika Anda Wanita.");
+  bot.sendMessage(chatId, "Balas '1', jika Anda Pria. Balas '2', jika Anda Wanita.");
 });
 
 bot.onText(/^\d+$/, (msg) => {
@@ -150,7 +150,7 @@ bot.onText(/^\d+$/, (msg) => {
           const minggu = getMingguBulanSekarang();
           bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek seragam hari ini :)`)
           .then(() => {
-            const gambarPath = `img/${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
           })
           .catch((error) => {
