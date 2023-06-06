@@ -69,6 +69,16 @@
                 "kemeja": "Smart Casual",
                 "bawahan": "celana/rok"
             }
+        },
+        "5": {
+            "pria": {
+                "kemeja": "Smart Casual",
+                "bawahan": "celana panjang"
+            },
+            "wanita": {
+                "kemeja": "Smart Casual",
+                "bawahan": "celana/rok"
+            }
         }
     },
     "jumat": {

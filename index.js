@@ -13,7 +13,7 @@ let chatData = {};
 // Menangani perintah /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Selamat datang di SonathaBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini.');
+  bot.sendMessage(chatId, 'Selamat datang di 3SBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini.');
 });
 
 
@@ -61,16 +61,27 @@ bot.onText(/^\d+$/, (msg) => {
       }
       else {
         const { kemeja, bawahan } = infoPakaianKerja;
-        bot.sendMessage(
-          chatId,
-          `Hari ini adalah hari ${hariIni}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek lagi :)`)
+        if (hariIni.toLowerCase() === 'kamis') {
+          const minggu = getMingguBulanSekarang();
+          bot.sendMessage(chatId, `Hari ini adalah hari ${hariIni}, minggu ${minggu}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam untuk besok :)`)
           .then(() => {
-            const gambarPath = `${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            const gambarPath = `img/${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
           })
           .catch((error) => {
             console.error('Error sending photo:', error);
           });
+        }
+        else {
+          bot.sendMessage(chatId, `Hari ini adalah hari ${hariIni}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam untuk besok :)`)
+          .then(() => {
+            const gambarPath = `img/${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            bot.sendPhoto(chatId, gambarPath);
+          })
+          .catch((error) => {
+            console.error('Error sending photo:', error);
+          });
+        }
       }
     });
   }
@@ -137,9 +148,9 @@ bot.onText(/^\d+$/, (msg) => {
         const { kemeja, bawahan } = infoPakaianKerja;
         if (hariBerikutnya.toLowerCase() === 'kamis') {
           const minggu = getMingguBulanSekarang();
-          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragambesok kalau mau cek lagi :)`)
+          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek seragam hari ini :)`)
           .then(() => {
-            const gambarPath = `${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            const gambarPath = `img/${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
           })
           .catch((error) => {
@@ -147,9 +158,9 @@ bot.onText(/^\d+$/, (msg) => {
           });
         }
         else {
-          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragambesok kalau mau cek lagi :)`)
+          bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek seragam hari ini :)`)
           .then(() => {
-            const gambarPath = `${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+            const gambarPath = `img/${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
           })
           .catch((error) => {
