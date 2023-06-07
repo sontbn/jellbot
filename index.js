@@ -147,7 +147,7 @@ bot.onText(/^\d+$/, (msg) => {
       else {
         const { kemeja, bawahan } = infoPakaianKerja;
         if (hariBerikutnya.toLowerCase() === 'kamis') {
-          const minggu = getMingguBulanSekarang();
+          const minggu = getMingguBulanBesok();
           bot.sendMessage(chatId, `Besok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek seragam hari ini :)`)
           .then(() => {
             const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
@@ -206,10 +206,21 @@ function getPakaianKerja(hari, gender, pakaianKerja) {
 
 function getMingguBulanSekarang() {
   const tanggalHariIni = new Date().getDate();
-  const minggu = Math.ceil(tanggalHariIni / 7);
+  const bulanSekarang = new Date().getMonth();
+  const tahunSekarang = new Date().getFullYear();
+  const tanggalPertamaBulanIni = new Date(tahunSekarang, bulanSekarang, 1).getDate();
+
+  const minggu = Math.ceil((tanggalHariIni - tanggalPertamaBulanIni + 1) / 7);
   return minggu.toString();
 }
 
+function getMingguBulanBesok() {
+  const tanggalBesok = new Date();
+  tanggalBesok.setDate(tanggalBesok.getDate() + 1); // Mengambil tanggal besok
+  const mingguBulanBesok = Math.ceil(tanggalBesok.getDate() / 7);
+
+  return mingguBulanBesok.toString();
+}
 
 
 
