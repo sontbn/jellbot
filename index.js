@@ -196,7 +196,7 @@ function getPakaianKerja(hari, gender, pakaianKerja) {
 
   let pakaian;
   if (hari.toLowerCase() === 'kamis') {
-    const minggu = getMingguBulanSekarang();
+    const minggu = getMingguBulanBesok(); // Menggunakan fungsi getMingguBulanBesok() untuk minggu dalam bulan besok
     pakaian = pakaianHariIni[minggu][gender === 1 ? 'pria' : 'wanita'];
   } else {
     pakaian = pakaianHariIni[gender === 1 ? 'pria' : 'wanita'];
