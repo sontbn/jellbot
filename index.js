@@ -263,11 +263,16 @@ bot.onText(/\/cekongkir/, async (msg) => {
   chatData[chatId] = { status: 'cekongkir' };
 
   // Mengirim pertanyaan pertama
-  bot.sendMessage(chatId, 'PILIH PROVINSI ASAL PENGIRIMAN:', {
-    reply_markup: {
-      inline_keyboard: await getProvincesKeyboard(),
-    },
-  });
+  bot.sendMessage(chatId, 'Dalam sesaat akan muncul daftar PROVINSI ASAL pengiriman. Pilih salah satu');
+
+  setTimeout(async () => {
+    // Mengirim pertanyaan pertama
+    bot.sendMessage(chatId, 'PROVINSI ASAL', {
+      reply_markup: {
+        inline_keyboard: await getProvincesKeyboard(),
+      },
+    });
+  }, 3000);
 });
 
 bot.on('callback_query', async (query) => {
@@ -280,43 +285,58 @@ bot.on('callback_query', async (query) => {
       data.originProvinceId = query.data;
 
       // Mengirim pertanyaan kedua
-      bot.sendMessage(chatId, 'PILIH KOTA/KAB ASAL PENGIRIMAN:', {
-        reply_markup: {
-          inline_keyboard: await getCitiesKeyboard(data.originProvinceId),
-        },
-      });
+      bot.sendMessage(chatId, 'Dalam sesaat akan muncul daftar KOTA/KAB ASAL pengiriman. Pilih salah satu');
+
+      setTimeout(async () => {
+        // Mengirim pertanyaan pertama
+        bot.sendMessage(chatId, 'KOTA/KAB ASAL', {
+          reply_markup: {
+            inline_keyboard: await getCitiesKeyboard(data.originProvinceId),
+          },
+        });
+      }, 2000);
     }
     else if (!data.originCityId) {
       data.originCityId = query.data;
 
       // Mengirim pertanyaan ketiga
-      bot.sendMessage(chatId, 'PILIH PROVINSI TUJUAN PENGIRIMAN:', {
-        reply_markup: {
-          inline_keyboard: await getProvincesKeyboard(),
-        },
-      });
+      bot.sendMessage(chatId, 'Dalam sesaat akan muncul daftar PROVINSI TUJUAN pengiriman. Pilih salah satu');
+
+      setTimeout(async () => {
+        // Mengirim pertanyaan pertama
+        bot.sendMessage(chatId, 'PROVINSI TUJUAN', {
+          reply_markup: {
+            inline_keyboard: await getProvincesKeyboard(),
+          },
+        });
+      }, 3000);
     }
     else if (!data.destinationProvinceId) {
       data.destinationProvinceId = query.data;
 
       // Mengirim pertanyaan keempat
-      bot.sendMessage(chatId, 'PILIH KOTA TUJUAN PENGIRIMAN:', {
-        reply_markup: {
-          inline_keyboard: await getCitiesKeyboard(data.destinationProvinceId),
-        },
-      });
+      bot.sendMessage(chatId, 'Dalam sesaat akan muncul daftar KOTA/KAB TUJUAN pengiriman. Pilih salah satu');
+
+      setTimeout(async () => {
+        // Mengirim pertanyaan pertama
+        bot.sendMessage(chatId, 'KOTA/KAB TUJUAN', {
+          reply_markup: {
+            inline_keyboard: await getCitiesKeyboard(data.destinationProvinceId),
+          },
+        });
+      }, 2000);
     }
     else if (!data.destinationCityId) {
       data.destinationCityId = query.data;
 
       // Mengirim pertanyaan kelima
-      bot.sendMessage(chatId, 'MASUKKAN BERAT KIRIMAN (dalam gram):');
+      bot.sendMessage(chatId, 'Masukkan estimasi BERAT paket (dalam gram). Misalnya 1 kilogram, tuliskan 1000');
     }
     else if (!data.weight) {
       data.weight = query.data;
 
       // Mengirim pertanyaan keenam
-      bot.sendMessage(chatId, 'PILIH KURIR:', {
+      bot.sendMessage(chatId, 'Pilih KURIR:', {
         reply_markup: {
           inline_keyboard: [
             [
@@ -417,9 +437,30 @@ async function getShippingCost(originCityId, destinationCityId, weight, courier)
     }, {
       headers: { 'key': apikey },
     });
-    const shippingCosts = response.data.rajaongkir.results[0].costs;
-    const formattedShippingCosts = shippingCosts.map((cost) => `${cost.service}: ${cost.cost[0].value}`);
-    return formattedShippingCosts.join('\n');
+    
+    const { query, origin_details, destination_details, results } = response.data.rajaongkir;
+    const originSummary = `Estimasi Ongkir\ndari: ${origin_details.city_name}, ${origin_details.province}\n`;
+    const destinationSummary = `ke: ${destination_details.city_name}, ${destination_details.province}\n`;
+    const weightSummary = `berat: ${query.weight} gram\n\n`;
+    
+    const formattedShippingCosts = results.map((result) => {
+      const { code, name, costs } = result;
+      const formattedCosts = costs.map((cost) => {
+        const { service, description, cost: shippingCosts } = cost;
+        const formattedShippingCosts = shippingCosts.map((shippingCost) => {
+          const { value, etd, note } = shippingCost;
+          const formattedValue = Number(value).toLocaleString('id-ID');
+          return `Service: ${service}\nDeskripsi: ${description}\nCost: Rp${formattedValue} (hari: ${etd})\nCatatan: ${note}\n`;
+        });
+        return formattedShippingCosts.join('\n');
+      });
+      return `Kurir: ${name}\n\n${formattedCosts.join('\n')}`;
+    });
+    
+    const shippingCostSummary = formattedShippingCosts.join('\n\n');
+    const finalSummary = originSummary + destinationSummary + weightSummary + shippingCostSummary;
+    
+    return finalSummary;
   } catch (error) {
     console.error('Error getting shipping cost:', error);
     return 'Failed to retrieve shipping cost.';
