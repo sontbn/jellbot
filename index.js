@@ -4,16 +4,25 @@ const axios = require('axios');
 require('dotenv').config();
 
 const token = process.env.TOKEN_TELEGRAM;
-const apikey = process.env.API_KEY_RAJAONGKIR;
+const apirajaong = process.env.API_KEY_RAJAONGKIR;
+const urlakuari = process.env.URL_AKU_ARI;
 
 const bot = new TelegramBot(token, { polling: true });
+
+const rajaOngkirLink = 'https://rajaongkir.com/';
+const saweriaLink = 'https://saweria.co/sontbn/';
 
 let chatData = {};
 
 // Menangani perintah /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Selamat datang di 3SBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini.');
+  bot.sendMessage(chatId, 'Selamat datang di 3SBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini, atau pilih dari daftar berikut.\n\n'+
+    '/caklontong - TekaTeki Sulit 🤣\n\n'+
+    '/cekongkir - Ongkir Indonesia\n\n'+
+    '/seragamhariini - DJPb hari ini\n\n'+
+    '/seragambesok - DJPb besok\n\n'+
+    '/tokohindo - Random Tokoh Indonesia');
 });
 
 
@@ -78,7 +87,7 @@ bot.on('callback_query', (callbackQuery) => {
         const { kemeja, bawahan } = infoPakaianKerja;
         if (hariIni.toLowerCase() === 'kamis') {
           const minggu = getMingguBulanSekarang();
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nHari ini adalah hari ${hariIni}, minggu ${minggu}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam untuk besok :)`)
+          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nHari ini adalah hari ${hariIni}, minggu ${minggu}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: ${kemeja} dan bawahan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
           .then(() => {
             const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
@@ -88,7 +97,7 @@ bot.on('callback_query', (callbackQuery) => {
           });
         }
         else {
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nHari ini adalah hari ${hariIni}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: kemeja ${kemeja} dan bawahan ${bawahan}.\n\nKlik /seragambesok kalau mau cek seragam untuk besok :)`)
+          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nHari ini adalah hari ${hariIni}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: ${kemeja} dan bawahan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
           .then(() => {
             const gambarPath = `img/${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
@@ -178,7 +187,7 @@ bot.on('callback_query', (callbackQuery) => {
         const { kemeja, bawahan } = infoPakaianKerja;
         if (hariBerikutnya.toLowerCase() === 'kamis') {
           const minggu = getMingguBulanBesok();
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBesok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek seragam hari ini :)`)
+          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBesok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
           .then(() => {
             const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
@@ -188,7 +197,7 @@ bot.on('callback_query', (callbackQuery) => {
           });
         }
         else {
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBesok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nKlik /seragamhariini kalau mau cek seragam hari ini :)`)
+          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBesok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
           .then(() => {
             const gambarPath = `img/${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
             bot.sendPhoto(chatId, gambarPath);
@@ -221,7 +230,7 @@ function getTanggalBerikutnya() {
 function getPakaianKerja(hari, gender, pakaianKerja) {
   const pakaianHariIni = pakaianKerja[hari.toLowerCase()];
   if (!pakaianHariIni) {
-    return 'Informasi pakaian kerja tidak tersedia untuk hari ini.';
+    return 'Informasi pakaian kerja tidak tersedia.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D';
   }
 
   let pakaian;
@@ -396,7 +405,7 @@ bot.onText(/^[0-9]+$/, (msg) => {
 async function getProvincesKeyboard() {
   try {
     const response = await axios.get('https://api.rajaongkir.com/starter/province', {
-      headers: { 'key': apikey },
+      headers: { 'key': apirajaong },
     });
     const provinces = response.data.rajaongkir.results;
     const keyboard = provinces.map((province) => {
@@ -413,7 +422,7 @@ async function getProvincesKeyboard() {
 async function getCitiesKeyboard(provinceId) {
   try {
     const response = await axios.get(`https://api.rajaongkir.com/starter/city?province=${provinceId}`, {
-      headers: { 'key': apikey },
+      headers: { 'key': apirajaong },
     });
     const cities = response.data.rajaongkir.results;
     const keyboard = cities.map((city) => {
@@ -435,13 +444,13 @@ async function getShippingCost(originCityId, destinationCityId, weight, courier)
       weight: weight,
       courier: courier,
     }, {
-      headers: { 'key': apikey },
+      headers: { 'key': apirajaong },
     });
     
     const { query, origin_details, destination_details, results } = response.data.rajaongkir;
-    const originSummary = `Estimasi Ongkir\ndari: ${origin_details.city_name}, ${origin_details.province}\n`;
-    const destinationSummary = `ke: ${destination_details.city_name}, ${destination_details.province}\n`;
-    const weightSummary = `berat: ${query.weight} gram\n\n`;
+    const originSummary = `Estimasi Ongkir\nDari: ${origin_details.city_name}, ${origin_details.province}\n`;
+    const destinationSummary = `Ke: ${destination_details.city_name}, ${destination_details.province}\n`;
+    const weightSummary = `Berat: ${query.weight} gram\n`;
     
     const formattedShippingCosts = results.map((result) => {
       const { code, name, costs } = result;
@@ -456,16 +465,94 @@ async function getShippingCost(originCityId, destinationCityId, weight, courier)
       });
       return `Kurir: ${name}\n\n${formattedCosts.join('\n')}`;
     });
-    
+
     const shippingCostSummary = formattedShippingCosts.join('\n\n');
     const finalSummary = originSummary + destinationSummary + weightSummary + shippingCostSummary;
     
-    return finalSummary;
+    const finalChat = finalSummary + `\nProvided by RajaOngkir API.\n\n\nJangan sungkan ya kalau mau beliin saya kopi :) [${saweriaLink}]`;
+    
+    return finalChat;
   } catch (error) {
     console.error('Error getting shipping cost:', error);
     return 'Failed to retrieve shipping cost.';
   }
 }
+
+
+
+
+
+
+
+// caklontong ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/caklontong/, async (msg) => {
+  const chatId = msg.chat.id;
+  chatData[chatId] = { status: 'caklontong' };
+
+  try {
+    // Baca variasi kalimat dari file JSON
+    const variasiFile = fs.readFileSync('wait.json');
+    const variasiKalimat = JSON.parse(variasiFile);
+
+    // Pilih salah satu variasi kalimat secara acak
+    const randomIndex = Math.floor(Math.random() * variasiKalimat.length);
+    const pesanVariasi = variasiKalimat[randomIndex];
+
+    bot.sendMessage(chatId, pesanVariasi);
+
+    const response = await axios.get(urlakuari+'/games/caklontong');
+    const { soal, jawaban, deskripsi } = response.data.hasil;
+
+    chatData[chatId] = { jawaban: jawaban.toLowerCase(), deskripsi };
+
+    bot.sendMessage(chatId, `*${soal}*`, { parse_mode: 'Markdown' });
+  } catch (error) {
+    console.log(error);
+    bot.sendMessage(chatId, 'Maaf, ada yang salah nih. Silakan coba lagi nanti.');
+  }
+});
+
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const userAnswer = msg.text ? msg.text.toLowerCase() : '';
+
+  if (chatData[chatId] && chatData[chatId].jawaban) {
+
+    const { jawaban, deskripsi } = chatData[chatId];
+
+    if (userAnswer === jawaban) {
+      const emot = ['👍', '👍🏼', '👍🏽', '👍🏾', '👍🏿', '👍🏻', '👍🏿✌️', '👍✌️', '👍👏', '👍😄'];
+      bot.sendMessage(chatId, `BENAR. ${deskripsi} ${emot[Math.floor(Math.random() * emot.length)]}`);
+    }
+    else {
+      const emot = ['😂', '😆', '😝', '🤣', '😜', '😄', '😊', '😃'];
+      bot.sendMessage(chatId, `Salah. Jawabannya *${jawaban}*.\n${deskripsi} ${emot[Math.floor(Math.random() * emot.length)]}`, { parse_mode: 'Markdown' });
+    }
+
+    // Menghapus data chat setelah menjawab
+    delete chatData[chatId];
+  }
+});
+
+
+
+
+// tokohindo --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/tokohindo/, async (msg) => {
+  const chatId = msg.chat.id;
+  try {
+    const response = await axios.get(urlakuari+'/randomtext/tokohindo');
+    const hasil = response.data.hasil;
+
+    await bot.sendPhoto(chatId, hasil.img);
+    await bot.sendMessage(chatId, `*[${hasil.kategori}]*\nNama: ${hasil.nama} (${hasil.nama2})\nAsal: ${hasil.asal}\nLahir: ${hasil.lahir}\nUsia: ${hasil.usia}\nGugur: ${hasil.gugur}\nMakam: ${hasil.lokasimakam}`, { parse_mode: 'Markdown' });
+    await bot.sendMessage(chatId, hasil.history);
+    await bot.sendMessage(chatId, `Jangan sungkan ya kalau mau beliin saya kopi :) [${saweriaLink}]`;
+  } catch (error) {
+    bot.sendMessage(chatId, 'Maaf, terjadi kesalahan dalam memuat informasi tokoh Indonesia. Silakan coba lagi nanti.');
+  }
+});
+
 
 
 
