@@ -1,11 +1,15 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const axios = require('axios');
+const { format } = require('date-fns');
+const { id } = require('date-fns/locale');
 require('dotenv').config();
+
 
 const token = process.env.TOKEN_TELEGRAM;
 const apirajaong = process.env.API_KEY_RAJAONGKIR;
 const urlakuari = process.env.URL_AKU_ARI;
+
 
 const bot = new TelegramBot(token, { polling: true });
 
@@ -20,7 +24,7 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, 'Selamat datang di 3SBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini, atau pilih dari daftar berikut.\n\n'+
     '/caklontong - TekaTeki Sulit 🤣\n\n'+
     '/cekongkir - Ongkir Indonesia\n\n'+
-    '/seragamhariini - DJPb hari ini\n\n'+
+    '/mingguini - DJPb hari ini\n\n'+
     '/seragambesok - DJPb besok\n\n'+
     '/tokohindo - Random Tokoh Indonesia');
 });
@@ -31,84 +35,7 @@ bot.onText(/\/start/, (msg) => {
 // seragamhariini---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bot.onText(/\/seragamhariini/, (msg) => {
   const chatId = msg.chat.id;
-  chatData[chatId] = { status: 'seragamhariini' };
-
-  const keyboard = [
-    [
-      { text: 'Pria', callback_data: '1' },
-      { text: 'Wanita', callback_data: '2' },
-    ],
-  ];
-
-  const replyMarkup = {
-    inline_keyboard: keyboard,
-  };
-
-  bot.sendMessage(chatId, 'Pilih:', { reply_markup: replyMarkup });
-  // bot.sendMessage(chatId, "Balas '1', jika Anda Pria. Balas '2', jika Anda Wanita.");
-});
-
-// bot.onText(/^\d+$/, (msg) => {
-bot.on('callback_query', (callbackQuery) => {
-  // const chatId = msg.chat.id;
-  const chatId = callbackQuery.message.chat.id;
-  const data = chatData[chatId];
-
-  if (data && data.status === 'seragamhariini') {
-    // const gender = parseInt(msg.text);
-    const gender = parseInt(callbackQuery.data);
-
-    if (![1, 2].includes(gender)) {
-      bot.sendMessage(chatId, 'Input tombol tidak valid.');
-      return;
-    }
-
-    // Membaca file JSON dengan data pakaian kerja
-    fs.readFile('pakaian_kerja.json', 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error:', err);
-        return;
-      }
-
-      // Parsing data JSON
-      const pakaianKerja = JSON.parse(data);
-
-      const hariIni = getHariIni();
-      const tanggalHariIni = getTanggalHariIni();
-      const infoPakaianKerja = getPakaianKerja(hariIni, gender, pakaianKerja);
-
-      // Reset status pengguna setelah selesai
-      delete chatData[chatId];
-
-      if (typeof infoPakaianKerja === 'string') {
-        bot.sendMessage(chatId, infoPakaianKerja);
-      }
-      else {
-        const { kemeja, bawahan } = infoPakaianKerja;
-        if (hariIni.toLowerCase() === 'kamis') {
-          const minggu = getMingguBulanSekarang();
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nHari ini adalah hari ${hariIni}, minggu ${minggu}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: ${kemeja} dan bawahan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
-          .then(() => {
-            const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
-            bot.sendPhoto(chatId, gambarPath);
-          })
-          .catch((error) => {
-            console.error('Error sending photo:', error);
-          });
-        }
-        else {
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nHari ini adalah hari ${hariIni}, tanggal ${tanggalHariIni}. Pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} adalah: ${kemeja} dan bawahan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
-          .then(() => {
-            const gambarPath = `img/${hariIni.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
-            bot.sendPhoto(chatId, gambarPath);
-          })
-          .catch((error) => {
-            console.error('Error sending photo:', error);
-          });
-        }
-      }
-    });
-  }
+  bot.sendMessage(chatId, 'Sudah beralih ke menu\n/mingguini atau /minggudepan');
 });
 
 function getHariIni() {
@@ -131,84 +58,7 @@ function getTanggalHariIni() {
 // seragambesok -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bot.onText(/\/seragambesok/, (msg) => {
   const chatId = msg.chat.id;
-  chatData[chatId] = { status: 'seragambesok' };
-
-  const keyboard = [
-    [
-      { text: 'Pria', callback_data: '1' },
-      { text: 'Wanita', callback_data: '2' },
-    ],
-  ];
-
-  const replyMarkup = {
-    inline_keyboard: keyboard,
-  };
-
-  bot.sendMessage(chatId, 'Pilih:', { reply_markup: replyMarkup });
-  // bot.sendMessage(chatId, "Balas '1', jika Anda Pria. Balas '2', jika Anda Wanita.");
-});
-
-// bot.onText(/^\d+$/, (msg) => {
-bot.on('callback_query', (callbackQuery) => {
-  // const chatId = msg.chat.id;
-  const chatId = callbackQuery.message.chat.id;
-  const data = chatData[chatId];
-
-  if (data && data.status === 'seragambesok') {
-    // const gender = parseInt(msg.text);
-    const gender = parseInt(callbackQuery.data);
-
-    if (![1, 2].includes(gender)) {
-      bot.sendMessage(chatId, 'Input tombol tidak valid.');
-      return;
-    }
-
-    // Membaca file JSON dengan data pakaian kerja
-    fs.readFile('pakaian_kerja.json', 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error:', err);
-        return;
-      }
-
-      // Parsing data JSON
-      const pakaianKerja = JSON.parse(data);
-
-      const hariBerikutnya = getHariBerikutnya();
-      const tanggalBerikutnya = getTanggalBerikutnya();
-      const infoPakaianKerja = getPakaianKerja(hariBerikutnya, gender, pakaianKerja);
-
-      // Reset status pengguna setelah selesai
-      delete chatData[chatId];
-
-      if (typeof infoPakaianKerja === 'string') {
-        bot.sendMessage(chatId, infoPakaianKerja);
-      }
-      else {
-        const { kemeja, bawahan } = infoPakaianKerja;
-        if (hariBerikutnya.toLowerCase() === 'kamis') {
-          const minggu = getMingguBulanBesok();
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBesok adalah hari ${hariBerikutnya}, minggu ${minggu}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
-          .then(() => {
-            const gambarPath = `img/kamis_${minggu}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
-            bot.sendPhoto(chatId, gambarPath);
-          })
-          .catch((error) => {
-            console.error('Error sending photo:', error);
-          });
-        }
-        else {
-          bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBesok adalah hari ${hariBerikutnya}, tanggal ${tanggalBerikutnya}. Pakaian kerja pegawai ${gender === 1 ? 'Pria' : 'Wanita'} di lingkungan DJPb adalah: ${kemeja} dan ${bawahan}.\n\nCobain teka-teki sulit /caklontong kalau kamu lagi bosan :D`)
-          .then(() => {
-            const gambarPath = `img/${hariBerikutnya.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
-            bot.sendPhoto(chatId, gambarPath);
-          })
-          .catch((error) => {
-            console.error('Error sending photo:', error);
-          });
-        }
-      }
-    });
-  }
+  bot.sendMessage(chatId, 'Sudah beralih ke menu\n/mingguini atau /minggudepan');
 });
 
 function getHariBerikutnya() {
@@ -243,6 +93,78 @@ function getPakaianKerja(hari, gender, pakaianKerja) {
   return pakaian;
 }
 
+function getMingguBulanBesok() {
+  const tanggalBesok = new Date();
+  tanggalBesok.setDate(tanggalBesok.getDate() + 1); // Mengambil tanggal besok
+  const mingguBulanBesok = Math.ceil(tanggalBesok.getDate() / 7);
+
+  return mingguBulanBesok.toString();
+}
+
+
+
+
+
+
+// seragammingguini ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/mingguini/, (msg) => {
+  const chatId = msg.chat.id;
+  chatData[chatId] = { status: 'mingguini' };
+
+  const keyboard = [
+    [
+      { text: 'Pria', callback_data: '1' },
+      { text: 'Wanita', callback_data: '2' },
+    ],
+  ];
+
+  const replyMarkup = {
+    inline_keyboard: keyboard,
+  };
+
+  bot.sendMessage(chatId, 'Pilih:', { reply_markup: replyMarkup });
+});
+
+bot.on('callback_query', async (callbackQuery) => {
+  const chatId = callbackQuery.message.chat.id;
+  const data = chatData[chatId];
+
+  if (data && data.status === 'mingguini') {
+    const gender = parseInt(callbackQuery.data);
+
+    if (![1, 2].includes(gender)) {
+      bot.sendMessage(chatId, 'Input tombol tidak valid.');
+      return;
+    }
+
+    // Mengirim foto-foto pakaian kerja untuk setiap hari
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+    const mingguBulanSekarang = getMingguBulanSekarang();
+
+    bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBerikut adalah pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} untuk minggu ini:`);
+
+    for (let i = 0; i < days.length; i++) {
+      const day = days[i];
+      let gambarPath;
+
+      if (day === 'Kamis') {
+        gambarPath = `img/${day.toLowerCase()}_${mingguBulanSekarang}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+      } else {
+        gambarPath = `img/${day.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+      }
+
+      try {
+        await bot.sendPhoto(chatId, gambarPath, { caption: day });
+      } catch (error) {
+        console.error('Error sending photo:', error);
+      }
+    }
+
+    // Reset status pengguna setelah selesai
+    delete chatData[chatId];
+  }
+});
+
 function getMingguBulanSekarang() {
   const tanggalHariIni = new Date().getDate();
   const bulanSekarang = new Date().getMonth();
@@ -253,13 +175,78 @@ function getMingguBulanSekarang() {
   return minggu.toString();
 }
 
-function getMingguBulanBesok() {
-  const tanggalBesok = new Date();
-  tanggalBesok.setDate(tanggalBesok.getDate() + 1); // Mengambil tanggal besok
-  const mingguBulanBesok = Math.ceil(tanggalBesok.getDate() / 7);
 
-  return mingguBulanBesok.toString();
+
+
+// seragamminggudepan ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/minggudepan/, (msg) => {
+  const chatId = msg.chat.id;
+  chatData[chatId] = { status: 'minggudepan' };
+
+  const keyboard = [
+    [
+      { text: 'Pria', callback_data: '1' },
+      { text: 'Wanita', callback_data: '2' },
+    ],
+  ];
+
+  const replyMarkup = {
+    inline_keyboard: keyboard,
+  };
+
+  bot.sendMessage(chatId, 'Pilih:', { reply_markup: replyMarkup });
+});
+
+bot.on('callback_query', async (callbackQuery) => {
+  const chatId = callbackQuery.message.chat.id;
+  const data = chatData[chatId];
+
+  if (data && data.status === 'minggudepan') {
+    const gender = parseInt(callbackQuery.data);
+
+    if (![1, 2].includes(gender)) {
+      bot.sendMessage(chatId, 'Input tombol tidak valid.');
+      return;
+    }
+
+    // Mengirim foto-foto pakaian kerja untuk setiap hari
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+    const mingguDepanBulanSekarang = getMingguDepanBulanSekarang();
+
+    bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBerikut adalah pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} untuk minggu depan:`);
+
+    for (let i = 0; i < days.length; i++) {
+      const day = days[i];
+      let gambarPath;
+
+      if (day === 'Kamis') {
+        gambarPath = `img/${day.toLowerCase()}_${mingguDepanBulanSekarang}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+      } else {
+        gambarPath = `img/${day.toLowerCase()}_${gender === 1 ? 'pria' : 'wanita'}.jpg`;
+      }
+
+      try {
+        await bot.sendPhoto(chatId, gambarPath, { caption: day });
+      } catch (error) {
+        console.error('Error sending photo:', error);
+      }
+    }
+
+    // Reset status pengguna setelah selesai
+    delete chatData[chatId];
+  }
+});
+
+function getMingguDepanBulanSekarang() {
+  const tanggalHariIni = new Date().getDate();
+  const bulanSekarang = new Date().getMonth();
+  const tahunSekarang = new Date().getFullYear();
+  const tanggalPertamaBulanSekarang = new Date(tahunSekarang, bulanSekarang, 1).getDate();
+
+  const minggu = Math.ceil((tanggalHariIni - tanggalPertamaBulanSekarang + 1) / 7) + 1;
+  return minggu.toString();
 }
+
 
 
 
@@ -547,8 +534,14 @@ bot.onText(/\/tokohindo/, async (msg) => {
     await bot.sendPhoto(chatId, hasil.img);
     await bot.sendMessage(chatId, `*[${hasil.kategori}]*\nNama: ${hasil.nama} (${hasil.nama2})\nAsal: ${hasil.asal}\nLahir: ${hasil.lahir}\nUsia: ${hasil.usia}\nGugur: ${hasil.gugur}\nMakam: ${hasil.lokasimakam}`, { parse_mode: 'Markdown' });
     await bot.sendMessage(chatId, hasil.history);
-    await bot.sendMessage(chatId, `Jangan sungkan ya kalau mau beliin saya kopi :) [${saweriaLink}]`;
+
+    const randomChance = Math.random(); // Menghasilkan angka acak antara 0 dan 1
+    const chanceThreshold = 0.4; // Ubah angka ini sesuai dengan peluang yang Anda inginkan (misalnya 0.3 untuk 30% peluang)
+    if (randomChance < chanceThreshold) {
+      await bot.sendMessage(chatId, `Jangan sungkan ya kalau mau beliin saya kopi :) [${saweriaLink}]`);
+    }
   } catch (error) {
+    console.log(error);
     bot.sendMessage(chatId, 'Maaf, terjadi kesalahan dalam memuat informasi tokoh Indonesia. Silakan coba lagi nanti.');
   }
 });
