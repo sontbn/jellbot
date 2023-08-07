@@ -22,21 +22,18 @@ let chatData = {};
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId, 'Selamat datang di 3SBot. Silakan klik Menu di kiri bawah untuk memulai fitur pada bot ini, atau pilih dari daftar berikut.\n\n'+
+    '/aichat - Chat dengan AI\n\n'+
+    '/djpb - Seragam DJPb\n\n'+
     '/caklontong - TekaTeki Sulit 🤣\n\n'+
     '/cekongkir - Ongkir Indonesia\n\n'+
-    '/mingguini - DJPb hari ini\n\n'+
-    '/seragambesok - DJPb besok\n\n'+
     '/tokohindo - Random Tokoh Indonesia');
 });
 
 
 
-
-// seragamhariini---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bot.onText(/\/seragamhariini/, (msg) => {
-  const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Sudah beralih ke menu\n/mingguini atau /minggudepan');
-});
+bot.onText(/\/djpb/, (msg) => { bot.sendMessage(msg.chat.id, 'Anda dapat menggunakan menu\n/mingguini atau /minggudepan'); });
+bot.onText(/\/seragamhariini/, (msg) => { bot.sendMessage(msg.chat.id, 'Sudah beralih ke menu\n/mingguini atau /minggudepan'); });
+bot.onText(/\/seragambesok/, (msg) => { bot.sendMessage(msg.chat.id, 'Sudah beralih ke menu\n/mingguini atau /minggudepan'); });
 
 function getHariIni() {
   const daftarHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -50,16 +47,6 @@ function getTanggalHariIni() {
   const tahunSekarang = new Date().getFullYear();
   return `${tanggalHariIni}-${bulanSekarang}-${tahunSekarang}`;
 }
-
-
-
-
-
-// seragambesok -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bot.onText(/\/seragambesok/, (msg) => {
-  const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Sudah beralih ke menu\n/mingguini atau /minggudepan');
-});
 
 function getHariBerikutnya() {
   const hariIni = new Date().getDay();
@@ -101,7 +88,25 @@ function getMingguBulanBesok() {
   return mingguBulanBesok.toString();
 }
 
+function getMingguBulanSekarang() {
+  const tanggalHariIni = new Date().getDate();
+  const bulanSekarang = new Date().getMonth();
+  const tahunSekarang = new Date().getFullYear();
+  const tanggalPertamaBulanIni = new Date(tahunSekarang, bulanSekarang, 1).getDate();
 
+  const minggu = Math.ceil((tanggalHariIni - tanggalPertamaBulanIni + 1) / 7);
+  return minggu.toString();
+}
+
+function getMingguDepanBulanSekarang() {
+  const tanggalHariIni = new Date().getDate();
+  const bulanSekarang = new Date().getMonth();
+  const tahunSekarang = new Date().getFullYear();
+  const tanggalPertamaBulanSekarang = new Date(tahunSekarang, bulanSekarang, 1).getDate();
+
+  const minggu = Math.ceil((tanggalHariIni - tanggalPertamaBulanSekarang + 1) / 7) + 1;
+  return minggu.toString();
+}
 
 
 
@@ -141,7 +146,7 @@ bot.on('callback_query', async (callbackQuery) => {
     const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
     const mingguBulanSekarang = getMingguBulanSekarang();
 
-    bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBerikut adalah pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} untuk minggu ini:`);
+    await bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBerikut adalah pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} untuk minggu ini:`);
 
     for (let i = 0; i < days.length; i++) {
       const day = days[i];
@@ -160,20 +165,12 @@ bot.on('callback_query', async (callbackQuery) => {
       }
     }
 
+    await bot.sendMessage(chatId, 'Cobain /aichat kalau kamu lagi pengen coba chat dengan AI, atau\n\n/caklontong kalau lagi bosan :D');
+
     // Reset status pengguna setelah selesai
     delete chatData[chatId];
   }
 });
-
-function getMingguBulanSekarang() {
-  const tanggalHariIni = new Date().getDate();
-  const bulanSekarang = new Date().getMonth();
-  const tahunSekarang = new Date().getFullYear();
-  const tanggalPertamaBulanIni = new Date(tahunSekarang, bulanSekarang, 1).getDate();
-
-  const minggu = Math.ceil((tanggalHariIni - tanggalPertamaBulanIni + 1) / 7);
-  return minggu.toString();
-}
 
 
 
@@ -213,7 +210,7 @@ bot.on('callback_query', async (callbackQuery) => {
     const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
     const mingguDepanBulanSekarang = getMingguDepanBulanSekarang();
 
-    bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBerikut adalah pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} untuk minggu depan:`);
+    await bot.sendMessage(chatId, `[UPDATE] ND-1783/PB.1/2023\n\nBerikut adalah pakaian kerja pegawai DJPb ${gender === 1 ? 'Pria' : 'Wanita'} untuk minggu depan:`);
 
     for (let i = 0; i < days.length; i++) {
       const day = days[i];
@@ -232,20 +229,12 @@ bot.on('callback_query', async (callbackQuery) => {
       }
     }
 
+    await bot.sendMessage(chatId, 'Cobain /aichat kalau kamu lagi pengen coba chat dengan AI, atau\n\n/caklontong kalau lagi bosan :D');
+
     // Reset status pengguna setelah selesai
     delete chatData[chatId];
   }
 });
-
-function getMingguDepanBulanSekarang() {
-  const tanggalHariIni = new Date().getDate();
-  const bulanSekarang = new Date().getMonth();
-  const tahunSekarang = new Date().getFullYear();
-  const tanggalPertamaBulanSekarang = new Date(tahunSekarang, bulanSekarang, 1).getDate();
-
-  const minggu = Math.ceil((tanggalHariIni - tanggalPertamaBulanSekarang + 1) / 7) + 1;
-  return minggu.toString();
-}
 
 
 
@@ -528,6 +517,8 @@ bot.on('message', (msg) => {
 bot.onText(/\/tokohindo/, async (msg) => {
   const chatId = msg.chat.id;
   try {
+    bot.sendMessage(chatId, 'mohon menunggu...');
+
     const response = await axios.get(urlakuari+'/randomtext/tokohindo');
     const hasil = response.data.hasil;
 
@@ -547,6 +538,67 @@ bot.onText(/\/tokohindo/, async (msg) => {
 });
 
 
+
+
+
+
+
+
+
+
+// gpt --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bot.onText(/\/aichat/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, `Ini adalah fitur chat dengan Artificial Intelligence (AI). Anda bisa coba bertanya apa saja dengan memilih di antara 2 fitur ini:\n\n/gpt {chat Anda} - OpenAI\n\n/bard {chat Anda} - Google Bard\n\nJangan sungkan ya kalau mau beliin saya kopi :) [${saweriaLink}]`);
+});
+bot.onText(/\/gpt$/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, '/gpt {chat Anda} - OpenAI');
+});
+bot.onText(/\/bard$/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, '/bard {chat Anda} - Google Bard');
+});
+
+bot.onText(/\/gpt (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const query = match[1];
+
+  // const preloadingMessage = await bot.sendMessage(chatId, '_generating chat..._', { parse_mode: 'Markdown' });
+  bot.sendChatAction(chatId, 'typing');
+
+  try {
+    const response = await axios.get(`https://api.akuari.my.id/ai/gpt?chat=${encodeURIComponent(query)}`);
+    const responText = response.data.respon;
+
+    // await bot.deleteMessage(chatId, preloadingMessage.message_id);
+    await bot.sendMessage(chatId, responText);
+  }
+  catch (error) {
+    // await bot.deleteMessage(chatId, preloadingMessage.message_id);
+    await bot.sendMessage(chatId, 'Maaf, terjadi kesalahan dalam memproses permintaan Anda.');
+  }
+});
+
+bot.onText(/\/bard (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const query = match[1];
+
+  // const preloadingMessage = await bot.sendMessage(chatId, '_generating chat..._', { parse_mode: 'Markdown' });
+  bot.sendChatAction(chatId, 'typing');
+
+  try {
+    const response = await axios.get(`https://api.akuari.my.id/ai/gbard?chat=${encodeURIComponent(query)}`);
+    const responText = response.data.respon;
+
+    // await bot.deleteMessage(chatId, preloadingMessage.message_id);
+    await bot.sendMessage(chatId, responText);
+  }
+  catch (error) {
+    // await bot.deleteMessage(chatId, preloadingMessage.message_id);
+    await bot.sendMessage(chatId, 'Maaf, terjadi kesalahan dalam memproses permintaan Anda.');
+  }
+});
 
 
 

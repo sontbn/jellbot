@@ -1,0 +1,12 @@
+{
+  "botpressVersion": "12.0.0",
+  "httpServer": {
+    "port": 3000
+  },
+  "modules": {
+    "telegram": {
+      "enabled": true,
+      "token": "6077491109:AAFLS0ycA1-UTBEQkUm70vFDaTAmP8zYV6A"
+    }
+  }
+}
